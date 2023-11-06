@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html ng-app="movieReviewApp">
+<head>
+    <title>Movie Review Page</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Movie Review Page</h1>
+    </header>
+    <div ng-controller="MovieController" class="container">
+        <div class="movie-container" ng-repeat="movie in movies">
+            <img ng-src="{{ movie.poster }}" alt="Movie Poster">
+            <h2 ng-bind="movie.title"></h2>
+            <div class="star-rating">
+                <input type="radio" ng-model="movie.rating" ng-value="5" id="star5_{{$index}}" ng-click="updateRating(movie)">
+                <label for="star5_{{$index}}"></label>
+                <input type="radio" ng-model="movie.rating" ng-value="4" id="star4_{{$index}}" ng-click="updateRating(movie)">
+                <label for="star4_{{$index}}"></label>
+                <input type="radio" ng-model="movie.rating" ng-value="3" id="star3_{{$index}}" ng-click="updateRating(movie)">
+                <label for="star3_{{$index}}"></label>
+                <input type="radio" ng-model="movie.rating" ng-value="2" id="star2_{{$index}}" ng-click="updateRating(movie)">
+                <label for="star2_{{$index}}"></label>
+                <input type="radio" ng-model="movie.rating" ng-value="1" id="star1_{{$index}}" ng-click="updateRating(movie)">
+                <label for="star1_{{$index}}"></label>
+            </div>
+            <div class="user-review">
+                <h3>Your Review:</h3>
+                <textarea ng-model="movie.review" rows="4" placeholder="Write your review here"></textarea><br>
+
+            <!-- Your movie content here -->
+            <button ng-click="submitReview(movie)">Submit Review</button><br>
+            <br><br>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-sanitize.js"></script>
+    <script>
+        angular.module('movieReviewApp', ['ngSanitize'])
+            .controller('MovieController', ['$scope', '$http', function ($scope, $http) {
+                $scope.movies = [
+                    {
+                        title: 'Jai Bhim',
+                        poster: 'movie1.jpg',
+                        rating: 0,
+                        review: '',
+                        userReview: ''
+                    },
+                    {
+                        title: 'Soorarai Pootru',
+                        poster: 'movie2.jpg',
+                        rating: 0,
+                        review: '',
+                        userReview: ''
+                    },
+                    {
+                        title: '96',
+                        poster: 'movie3.jpg',
+                        rating: 0,
+                        review: '',
+                        userReview: ''
+                    },
+                    {
+                        title: 'Adiyae',
+                        poster: 'movie4.jpg',
+                        rating: 0,
+                        review: '',
+                        userReview: ''
+                    },
+                    {
+                        title: 'Bachelor',
+                        poster: 'movie5.jpg',
+                        rating: 0,
+                        review: '',
+                        userReview: ''
+                    },
+                    {
+                        title: '7G Rainbow colony ',
+                        poster: 'movie6.jpg',
+                        rating: 0,
+                        review: '',
+                        userReview: ''
+                    },
+                    {
+                        title: 'ManMadhan',
+                        poster: 'movie7.jpg',
+                        rating: 0,
+                        review: '',
+                        userReview: ''
+                    },
+                    {
+                        title: 'Vinnaithandi Varuvaayaa',
+                        poster: 'movie8.jpg',
+                        rating: 0,
+                        review: '',
+                        userReview: ''
+                    },
+                    {
+                        title: '3',
+                        poster: 'movie9.jpg',
+                        rating: 0,
+                        review: '',
+                        userReview: ''
+                    },
+                    {
+                        title: 'Raangi',
+                        poster: 'movie10.jpg',
+                        rating: 0,
+                        review: '',
+                        userReview: ''
+                    }
+                ];
+
+                // Your movie data and other code here
+                
+                $scope.updateRating = function (movie) {
+                    $http.post('/storeRating', { movieTitle: movie.title, rating: movie.rating })
+                        .then(function (response) {
+                            // Handle success
+                            console.log('Rating stored successfully');
+                        })
+                        .catch(function (error) {
+                            // Handle error
+                            console.error('Error storing rating:', error);
+                        });
+                };
+
+                $scope.submitReview = function (movie) {
+                    if (movie.rating && movie.review) {
+                        $http.post('/storeReview', { movieTitle: movie.title, userReview: movie.review })
+                            .then(function (response) {
+                                // Handle success
+                                console.log('Review stored successfully');
+                                movie.userReview = `<div><strong>Rating:</strong> ${movie.rating}<br><strong>Review:</strong> ${movie.review}</div>`;
+                                movie.review = ''; // Clear the review textarea
+                            })
+                            .catch(function (error) {
+                                // Handle error
+                                console.error('Error storing review:', error);
+                            });
+                    } else {
+                        alert('Please select a rating and write a review.');
+                    }
+                };
+            }]);
+    </script>
+</body>
+</html>

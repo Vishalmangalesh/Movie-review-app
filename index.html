@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html ng-app="authApp">
+    <header><h1><p>welcome to our movie review application</p></h1></header>
+<head>
+    <title>Login and Signup</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <video id="background-video" autoplay muted loop>
+        <source src="fim.mp4" type="video/mp4">
+    </video>
+
+    <div ng-controller="AuthController" class="container">
+        <h1>Login or Signup</h1>
+        <form ng-show="showLogin" ng-submit="login()">
+            <label for="loginUsername">Username:</label>
+            <input type="text" id="loginUsername" ng-model="loginUsername" required>
+            <br>
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" ng-model="loginPassword" required>
+            <br>
+            <button type="submit">Login</button>
+        </form>
+        <form ng-show="showSignup" ng-submit="signup()">
+            <label for="signupUsername">Username:</label>
+            <input type="text" id="signupUsername" ng-model="signupUsername" required>
+            <br>
+            <label for="signupPassword">Password:</label>
+            <input type="password" id="signupPassword" ng-model="signupPassword" required>
+            <br>
+            <button type="submit">Signup</button>
+        </form>
+        <button ng-click="toggleForm()">Switch to {{ showLogin ? 'Signup' : 'Login' }}</button>
+        <div ng-bind="message"></div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-sanitize.js"></script>
+    <script src="your-angular-files.js"></script>
+    <script>
+        angular.module('authApp', ['ngSanitize'])
+            .controller('AuthController', ['$scope', '$http', '$window', function ($scope, $http, $window) {
+                $scope.showLogin = true;
+                $scope.showSignup = false;
+                $scope.loginUsername = '';
+                $scope.loginPassword = '';
+                $scope.signupUsername = '';
+                $scope.signupPassword = '';
+                $scope.message = '';
+
+                $scope.toggleForm = function () {
+                    $scope.showLogin = !$scope.showLogin;
+                    $scope.showSignup = !$scope.showSignup;
+                    $scope.message = '';
+                };
+
+                $scope.login = function () {
+    const data = {
+        username: $scope.loginUsername,
+        password: $scope.loginPassword
+    };
+    $http.post('/login', data).then(function (response) {
+        $scope.message = response.data.message;
+        if (response.data.message === 'Login successful') {
+            // Redirect to main.html on successful login
+            $window.location.href = 'main.html';
+        }
+    }).catch(function (error) {
+        $scope.message = error.data.message;
+    });
+};
+
+                $scope.signup = function () {
+                    const data = {
+                        username: $scope.signupUsername,
+                        password: $scope.signupPassword
+                    };
+                    $http.post('/signup', data).then(function (response) {
+                        $scope.message = response.data.message;
+                    }).catch(function (error) {
+                        $scope.message = error.data.message;
+                    });
+                };
+            }]);
+    </script>
+</body>
+</html>
+
